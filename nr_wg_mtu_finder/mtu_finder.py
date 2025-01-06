@@ -305,6 +305,21 @@ class MTUFinder(object):
             returncode=process.returncode, stdout=stdout, stderr=stderr
         )
 
+    def ip_link_set_dev(self):
+        """Set new MTU on device."""
+        msg = "ip link set dev"
+        print(f"{msg:<50s}", end=": ")
+        process = subprocess.Popen(
+            ["ip", "link", "set", "dev", f"{self.interface}", "mtu", f"{self.current_mtu}"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True,
+        )
+        stdout, stderr = process.communicate()
+        self.handle_returncode(
+            returncode=process.returncode, stdout=stdout, stderr=stderr
+        )
+
     def run_peer_mode(self):
         """Run all steps for peer mode.
 
@@ -347,9 +362,10 @@ class MTUFinder(object):
                 self.peer_mtu = current_mtu
 
                 print("-" * 80)
-                self.wg_quick_down()
-                self.update_mtu_in_conf_file()
-                self.wg_quick_up()
+                # self.wg_quick_down()
+                # self.update_mtu_in_conf_file()
+                # self.wg_quick_up()
+                self.ip_link_set_dev()
 
                 # Wait a short while after interface is spun up.
                 time.sleep(1)
