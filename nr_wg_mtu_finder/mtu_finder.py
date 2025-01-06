@@ -368,7 +368,7 @@ class MTUFinder(object):
                 # self.ip_link_set_dev()
 
                 # Wait a short while after interface is spun up.
-                time.sleep(25)
+                time.sleep(1)
 
                 try:
                     # Ping IP address of server to flush connection
