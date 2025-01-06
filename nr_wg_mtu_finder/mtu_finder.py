@@ -362,13 +362,13 @@ class MTUFinder(object):
                 self.peer_mtu = current_mtu
 
                 print("-" * 80)
-                # self.wg_quick_down()
-                # self.update_mtu_in_conf_file()
-                # self.wg_quick_up()
-                self.ip_link_set_dev()
+                self.wg_quick_down()
+                self.update_mtu_in_conf_file()
+                self.wg_quick_up()
+                # self.ip_link_set_dev()
 
                 # Wait a short while after interface is spun up.
-                time.sleep(1)
+                time.sleep(25)
 
                 try:
                     # Ping IP address of server to flush connection
