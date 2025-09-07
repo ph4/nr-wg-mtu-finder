@@ -245,7 +245,7 @@ class MTUFinder(object):
                 resp = requests.get(
                     f"http://{self.server_ip}:{self.server_port}/server/status",
                     verify=False,
-                    timeout=5,
+                    timeout=3,
                 )
 
                 server_mtu, server_status = (
@@ -265,6 +265,10 @@ class MTUFinder(object):
                     continue
             except requests.exceptions.ConnectTimeout:
                 print("FAILED, ConnectTimeout, Retrying...")
+                time.sleep(1)
+                continue
+            except requests.exceptions.ReadTimeout:
+                print("FAILED, ReadTimeout, Retrying...")
                 time.sleep(1)
                 continue
 
