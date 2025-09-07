@@ -324,6 +324,21 @@ class MTUFinder(object):
             returncode=process.returncode, stdout=stdout, stderr=stderr
         )
 
+    def ping_until_connected(self):
+        # Ping IP address of server until it is available
+        max_tries = 5
+        for i in range(max_tries):
+            if i > 0:
+                print("Initial ping failed, retrying...")
+            try:
+                self.__peer_mode__ping_server()
+                break
+            except ReturncodeError:
+                continue
+        else:
+            print("Could not ping the server after " + max_tries + " tries.")
+            raise ReturncodeError()
+
     def run_peer_mode(self):
         """Run all steps for peer mode.
 
@@ -331,14 +346,13 @@ class MTUFinder(object):
         """
         self.create_log()
         while True:
-            # Ping IP address of server to flush connection
-            self.__peer_mode__ping_server()
+
+            self.ping_until_connected()
 
             # Tell server that peer is ready for next loop.
             self.__peer_mode__send_server_peer_ready()
 
-            # Ping IP address of server to flush connection
-            self.__peer_mode__ping_server()
+            self.ping_until_connected()
 
             # Start a fresh loop of cycling through all peer MTUs
             # At start, find what the current server_mtu is.
@@ -375,8 +389,7 @@ class MTUFinder(object):
                 time.sleep(1)
 
                 try:
-                    # Ping IP address of server to flush connection
-                    self.__peer_mode__ping_server()
+                    self.ping_until_connected()
 
                     up_rcv_bps, up_snd_bps = self.run_iperf3_upload_test()
                     time.sleep(1)
